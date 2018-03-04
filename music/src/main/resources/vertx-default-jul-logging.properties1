@@ -1,0 +1,39 @@
+## Root logger option
+#log4j.rootLogger=info, stdout, file
+#
+## Redirect log messages to console
+#log4j.appender.stdout=org.apache.log4j.ConsoleAppender
+#log4j.appender.stdout.Target=System.out
+#log4j.appender.stdout.layout=org.apache.log4j.PatternLayout
+#log4j.appender.stdout.layout.ConversionPattern=%d{yyyy-MM-dd HH:mm:ss} %-5p %c{1}:%L - %m%n
+#
+#log4j.logger.io.netty.handler.codec.http.websocketx= ERROR
+#
+#log4j.appender.file=org.apache.log4j.rolling.RollingFileAppender
+#log4j.appender.file.File=./logs/auth.log
+#
+#log4j.appender.file.RollingPolicy=org.apache.log4j.rolling.TimeBasedRollingPolicy
+#log4j.appender.file.RollingPolicy.ActiveFileName =./logs/auth.log
+#
+#
+#log4j.appender.file.RollingPolicy.FileNamePattern=./logs/logs.%d{yyyyMMdd}.gz
+#log4j.appender.file.layout = org.apache.log4j.PatternLayout
+#log4j.appender.file.layout.ConversionPattern=%d{ABSOLUTE} %5p %c{1}:%L - %m%n
+
+
+handlers=java.util.logging.ConsoleHandler,java.util.logging.FileHandler
+#date, source, logger, level, message, thrown
+java.util.logging.SimpleFormatter.format=%1$tF %1$tH:%1$tM:%1$tS %2$s%n%4$s: %5$s%6$s%n
+java.util.logging.ConsoleHandler.formatter=java.util.logging.SimpleFormatter
+java.util.logging.ConsoleHandler.level=FINEST
+java.util.logging.FileHandler.level=INFO
+java.util.logging.FileHandler.formatter=io.vertx.core.logging.impl.VertxLoggerFormatter
+
+# Put the log in the system temporary directory
+java.util.logging.FileHandler.pattern=%t/vertx.log
+
+.level=INFO
+io.vertx.ext.web.level=FINEST
+io.vertx.level=INFO
+com.hazelcast.level=INFO
+io.netty.util.internal.PlatformDependent.level=SEVERE
