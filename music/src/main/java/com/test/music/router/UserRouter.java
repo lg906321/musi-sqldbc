@@ -25,18 +25,10 @@ public class UserRouter extends AbstractVerticle {
 
     @Override
     public void start(Future<Void> startFuture) throws Exception {
-        userService = new UserService(null);
+        userService = new UserService();
         roleService = new RoleService();
 
-        DeployUtil.deploy(vertx, userService, roleService)
-                .setHandler(ar -> {
-                    boolean succeeded = ar.succeeded();
-                    if (succeeded) {
-                        startFuture.complete();
-                    } else {
-                        startFuture.fail(ar.cause());
-                    }
-                });
+        DeployUtil.deploy(vertx, startFuture, userService, roleService);
 //        DeployUtil.deploy(this);
     }
 

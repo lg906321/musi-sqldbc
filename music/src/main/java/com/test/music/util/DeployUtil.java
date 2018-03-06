@@ -1,6 +1,5 @@
 package com.test.music.util;
 
-import com.test.music.router.UserRouter;
 import io.vertx.core.AbstractVerticle;
 import io.vertx.core.CompositeFuture;
 import io.vertx.core.Future;
@@ -15,8 +14,17 @@ import java.util.stream.Stream;
 @Slf4j
 public class DeployUtil {
 
-    public static Future<String> deploy(Vertx vertx, AbstractVerticle... verticles) {
+    public static Future<String> deploy(Vertx vertx, Future<Void> start, AbstractVerticle... verticles) {
         Future<String> retFuture = Future.future();
+        retFuture.setHandler(ar -> {
+            val succeeded = ar.succeeded();
+            if (succeeded) {
+                start.complete();
+            } else {
+                start.fail(ar.cause());
+            }
+        });
+
         Objects.requireNonNull(vertx);
         Objects.requireNonNull(verticles);
         if (verticles.length == 0) {

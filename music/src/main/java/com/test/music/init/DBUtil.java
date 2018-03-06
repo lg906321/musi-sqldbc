@@ -2,11 +2,19 @@ package com.test.music.init;
 
 import com.test.music.util.ReadFileUtil;
 import io.vertx.core.AbstractVerticle;
+import io.vertx.core.AsyncResult;
 import io.vertx.core.Future;
+import io.vertx.core.Handler;
+import io.vertx.core.json.JsonArray;
 import io.vertx.core.json.JsonObject;
 import io.vertx.ext.jdbc.JDBCClient;
+import io.vertx.ext.sql.ResultSet;
+import io.vertx.ext.sql.SQLConnection;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
+
+import java.util.List;
+import java.util.Objects;
 
 @Slf4j
 public class DBUtil extends AbstractVerticle {
@@ -42,4 +50,46 @@ public class DBUtil extends AbstractVerticle {
         CLIENT = JDBCClient.createShared(vertx, dbConfig);
         return true;
     }
+
+    public Future<List<? extends Object>> queryList(String sql, JsonArray param) {
+        Objects.requireNonNull(sql);
+        boolean noParam = param == null || param.isEmpty();
+
+        Future<ResultSet> resultSetFuture = Future.future();
+        Future<List<? extends Object>> retListFuture = Future.future();
+
+        CLIENT.getConnection(connAR -> {
+            val succeeded = connAR.succeeded();
+            if (succeeded) {
+                SQLConnection conn = connAR.result();
+                if (noParam) {
+                    conn.query(sql, resultSetFuture);
+                } else {
+                    conn.queryWithParams(sql, param, resultSetFuture);
+                }
+            }
+        });
+
+        resultSetFuture.setHandler(ar -> {
+            val succeeded = ar.succeeded();
+            if(succeeded){
+                ResultSet result = ar.result();
+                retListFuture.complete(result.getResults());
+            } else {
+                retListFuture.fail(ar.cause());
+            }
+        });
+        return null;
+    }
+
+    private Future<ResultSet> getList() {
+        return null;
+    }
+
+
+    public Future<List<? extends Object>> queryList(String sql) {
+        Objects.requireNonNull(sql);
+        return null;
+    }
+
 }

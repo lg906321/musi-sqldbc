@@ -8,23 +8,24 @@ import io.vertx.core.json.JsonArray;
 import io.vertx.core.json.JsonObject;
 import io.vertx.ext.jdbc.JDBCClient;
 import io.vertx.ext.sql.SQLConnection;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.List;
 
+@Slf4j
 public class UserDao extends AbstractVerticle {
 
     JDBCClient jdbcClient = null;
-    private Logger logger = LoggerFactory.getLogger(UserDao.class);
 
     private String queryUserList = "SELECT id,name,img,sex,creatTime FROM user WHERE name LIKE ? AND id=? LIMIT ?,?";
 
     @Override
     public void start() throws Exception {
-        jdbcClient = DBVerticle.getClient();
-        logger.info("UserDao init...");
+//        jdbcClient = DBVerticle.getClient();
+        log.info("UserDao init...");
     }
 
     public Future<List<JsonObject>> queryUserList(JSONObject params) {
@@ -53,12 +54,12 @@ public class UserDao extends AbstractVerticle {
                                 List<JsonObject> rows = queryAr.result().getRows();
                                 ar.complete(rows);
                             } else {
-                                logger.info("查询失败:" + queryAr.cause().getMessage());
+                                log.info("查询失败:" + queryAr.cause().getMessage());
                                 ar.fail("查询失败:" + queryAr.cause().getMessage());
                             }
                         });
                     } else {
-                        logger.info("获取数据库链接失败:" + ar.cause().getMessage());
+                        log.info("获取数据库链接失败:" + ar.cause().getMessage());
                         ar.fail("获取数据库链接失败:" + ar.cause().getMessage());
                     }
                 }));
